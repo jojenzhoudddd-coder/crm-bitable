@@ -19,9 +19,9 @@ export function getText(value: FieldValue): string {
   if (typeof value === 'boolean') return value ? '是' : '否';
   // Bitable 文本字段返回 [{text, type}] 数组
   if (Array.isArray(value)) {
-    const texts = value
-      .filter((v): v is { text: string } => v !== null && typeof v === 'object' && 'text' in v)
-      .map((v) => v.text);
+    const texts = (value as unknown as Array<{ text?: string }>)
+      .filter((v) => v !== null && typeof v === 'object' && 'text' in v)
+      .map((v) => String(v.text || ''));
     if (texts.length > 0) return texts.join('');
   }
   // 单选字段
