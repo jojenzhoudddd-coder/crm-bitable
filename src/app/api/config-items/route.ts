@@ -94,6 +94,8 @@ export async function POST(request: NextRequest) {
     const product = await bitable.getRecord(PRODUCT_TABLE.id(), productId);
     const pf = PRODUCT_TABLE.fields;
     const standardPrice = getNumber(product.fields[pf.price]);
+    const productName = getText(product.fields[pf.name]);
+    const productCode = getText(product.fields[pf.code]);
 
     const { unitPrice, subtotal } = calcItemPrice({
       standardPrice,
@@ -105,6 +107,9 @@ export async function POST(request: NextRequest) {
     const fields: Record<string, FieldValue> = {
       [f.opportunity]: buildSingleLink(opportunityId),
       [f.product]: buildSingleLink(productId),
+      [f.productName]: productName,
+      [f.productCode]: productCode,
+      [f.standardPrice]: standardPrice,
       [f.quantity]: quantity,
       [f.discountRate]: discountRate,
       [f.unitPrice]: unitPrice,
