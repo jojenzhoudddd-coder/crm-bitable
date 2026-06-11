@@ -54,9 +54,13 @@ export function getNumber(value: FieldValue): number {
 /** 提取关联记录 ID 列表 */
 export function getLinkIds(value: FieldValue): string[] {
   if (!Array.isArray(value)) return [];
-  return (value as LinkFieldValue[])
-    .filter((v) => v && v.record_id)
-    .map((v) => v.record_id);
+  return (value as unknown[])
+    .map((v) => {
+      if (typeof v === 'string') return v;
+      if (v && typeof v === 'object' && 'record_id' in v) return (v as LinkFieldValue).record_id;
+      return '';
+    })
+    .filter(Boolean);
 }
 
 /** 提取第一个关联记录 ID */
@@ -68,9 +72,13 @@ export function getFirstLinkId(value: FieldValue): string | null {
 /** 提取关联记录文本 */
 export function getLinkTexts(value: FieldValue): string[] {
   if (!Array.isArray(value)) return [];
-  return (value as LinkFieldValue[])
-    .filter((v) => v && v.text)
-    .map((v) => v.text!);
+  return (value as unknown[])
+    .map((v) => {
+      if (typeof v === 'string') return v;
+      if (v && typeof v === 'object' && 'text' in v) return String((v as { text?: string }).text || '');
+      return '';
+    })
+    .filter(Boolean);
 }
 
 /** 提取人员信息 */
@@ -104,12 +112,12 @@ export function getAttachmentUrls(value: FieldValue): string[] {
     .map((v) => v.tmp_url || v.url || '');
 }
 
-/** 构建关联字段值 */
-export function buildLinkValue(recordIds: string[]): LinkFieldValue[] {
-  return recordIds.map((id) => ({ record_id: id }));
+/** 构建关联字段值（Bitable DuplexLink 写入格式为纯字符串数组） */
+export function buildLinkValue(recordIds: string[]): string[] {
+  return recordIds;
 }
 
 /** 构建单个关联 */
-export function buildSingleLink(recordId: string): LinkFieldValue[] {
-  return [{ record_id: recordId }];
+export function buildSingleLink(recordId: string): string[] {
+  return [recordId];
 }

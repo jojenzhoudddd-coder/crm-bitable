@@ -15,6 +15,7 @@ export type FieldValue =
   | number
   | boolean
   | null
+  | string[]
   | LinkFieldValue[]
   | PersonFieldValue[]
   | OptionFieldValue
